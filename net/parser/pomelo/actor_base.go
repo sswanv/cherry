@@ -33,7 +33,10 @@ func (p *ActorBase) ResponseError(session *cproto.Session, err error) {
 		errorHandler := p.App().ErrorHandler()
 		if errorHandler != nil {
 			statusCode = errorHandler(err)
+		} else {
+			statusCode = ccode.UnknownError
 		}
+		clog.Errorf("[ResponseError] err = %+v", err)
 	}
 	ResponseCode(p, session.AgentPath, session.Sid, session.Mid, statusCode)
 }

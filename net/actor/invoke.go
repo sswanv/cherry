@@ -145,11 +145,11 @@ func retValue(serializer cfacade.ISerializer, rets []reflect.Value, handler func
 					if handler != nil {
 						rspCode = handler(v)
 					} else {
-						rspCode = ccode.RPCRemoteExecuteError
+						rspCode = ccode.UnknownError
 					}
 				}
 			default:
-				rspCode = ccode.RPCRemoteExecuteError
+				rspCode = ccode.UnknownError
 			}
 		}
 	} else if retsLen == 2 {
@@ -172,7 +172,7 @@ func retValue(serializer cfacade.ISerializer, rets []reflect.Value, handler func
 					rspCode = handler(v)
 				}
 			default:
-				rspCode = ccode.RPCRemoteExecuteError
+				rspCode = ccode.UnknownError
 			}
 		}
 	}
