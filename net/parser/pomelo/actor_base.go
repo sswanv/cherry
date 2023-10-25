@@ -1,6 +1,7 @@
 package pomelo
 
 import (
+	ccode "github.com/cherry-game/cherry/code"
 	cfacade "github.com/cherry-game/cherry/facade"
 	clog "github.com/cherry-game/cherry/logger"
 	cactor "github.com/cherry-game/cherry/net/actor"
@@ -23,6 +24,17 @@ func (p *ActorBase) Response(session *cproto.Session, v interface{}) {
 }
 
 func (p *ActorBase) ResponseCode(session *cproto.Session, statusCode int32) {
+	ResponseCode(p, session.AgentPath, session.Sid, session.Mid, statusCode)
+}
+
+func (p *ActorBase) ResponseError(session *cproto.Session, err error) {
+	var statusCode = ccode.OK
+	if err != nil {
+		errorHandler := p.App().ErrorHandler()
+		if errorHandler != nil {
+			statusCode = errorHandler(err)
+		}
+	}
 	ResponseCode(p, session.AgentPath, session.Sid, session.Mid, statusCode)
 }
 

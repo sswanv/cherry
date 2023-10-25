@@ -2,6 +2,7 @@ package cherryCode
 
 const (
 	OK                    int32 = 0  // is ok
+	UnknownError                = 1  // unknown error
 	SessionUIDNotBind     int32 = 10 // session uid not bind
 	DiscoveryNotFoundNode int32 = 11 // discovery not fond node id
 	NodeRequestError      int32 = 12 // node request error
@@ -19,7 +20,6 @@ const (
 	ActorSourceEqualTarget  int32 = 30 // source equal target
 	ActorPublishRemoteError int32 = 31 // actor publish remote error
 	ActorChildIDNotFound    int32 = 32 // actor child id not found
-
 )
 
 func IsOK(code int32) bool {

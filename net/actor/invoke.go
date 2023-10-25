@@ -44,7 +44,7 @@ func InvokeRemoteFunc(app cfacade.IApplication, fi *creflect.FuncInfo, m *cfacad
 	if m.IsCluster {
 		cutils.Try(func() {
 			rets := fi.Value.Call(values)
-			rspCode, rspData := retValue(app.Serializer(), rets)
+			rspCode, rspData := retValue(app.Serializer(), rets, app.ErrorHandler())
 
 			retResponse(m.ClusterReply, &cproto.Response{
 				Code: rspCode,
@@ -63,7 +63,7 @@ func InvokeRemoteFunc(app cfacade.IApplication, fi *creflect.FuncInfo, m *cfacad
 				fi.Value.Call(values)
 			} else {
 				rets := fi.Value.Call(values)
-				rspCode, rspData := retValue(app.Serializer(), rets)
+				rspCode, rspData := retValue(app.Serializer(), rets, app.ErrorHandler())
 				m.ChanResult <- &cproto.Response{
 					Code: rspCode,
 					Data: rspData,
@@ -128,7 +128,7 @@ func EncodeArgs(app cfacade.IApplication, fi *creflect.FuncInfo, index int, m *c
 	return nil
 }
 
-func retValue(serializer cfacade.ISerializer, rets []reflect.Value) (int32, []byte) {
+func retValue(serializer cfacade.ISerializer, rets []reflect.Value, handler func(error) int32) (int32, []byte) {
 	var (
 		retsLen = len(rets)
 		rspCode = ccode.OK
@@ -137,8 +137,19 @@ func retValue(serializer cfacade.ISerializer, rets []reflect.Value) (int32, []by
 
 	if retsLen == 1 {
 		if val := rets[0].Interface(); val != nil {
-			if c, ok := val.(int32); ok {
-				rspCode = c
+			switch v := val.(type) {
+			case int32:
+				rspCode = v
+			case error:
+				if val != nil {
+					if handler != nil {
+						rspCode = handler(v)
+					} else {
+						rspCode = ccode.RPCRemoteExecuteError
+					}
+				}
+			default:
+				rspCode = ccode.RPCRemoteExecuteError
 			}
 		}
 	} else if retsLen == 2 {
@@ -153,8 +164,15 @@ func retValue(serializer cfacade.ISerializer, rets []reflect.Value) (int32, []by
 		}
 
 		if val := rets[1].Interface(); val != nil {
-			if c, ok := val.(int32); ok {
-				rspCode = c
+			switch v := val.(type) {
+			case int32:
+				rspCode = v
+			case error:
+				if handler != nil {
+					rspCode = handler(v)
+				}
+			default:
+				rspCode = ccode.RPCRemoteExecuteError
 			}
 		}
 	}

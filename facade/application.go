@@ -7,6 +7,8 @@ import (
 )
 
 type (
+	ErrorHandler func(error) int32
+
 	// INode 节点信息
 	INode interface {
 		NodeId() string        // 节点id(全局唯一)
@@ -33,6 +35,7 @@ type (
 		Discovery() IDiscovery             // 发现服务
 		Cluster() ICluster                 // 集群服务
 		ActorSystem() IActorSystem         // actor系统
+		ErrorHandler() ErrorHandler        // 错误处理
 	}
 
 	// ProfileJSON profile配置文件读取接口

@@ -38,6 +38,7 @@ type (
 		cluster      cfacade.ICluster     // cluster component
 		actorSystem  *cactor.Component    // actor system
 		netParser    cfacade.INetParser   // net packet parser
+		errorHandler cfacade.ErrorHandler // err handler
 	}
 )
 
@@ -289,6 +290,10 @@ func (a *Application) ActorSystem() cfacade.IActorSystem {
 	return a.actorSystem
 }
 
+func (a *Application) ErrorHandler() cfacade.ErrorHandler {
+	return a.errorHandler
+}
+
 func (a *Application) StartTime() string {
 	return a.startTime.ToDateTimeFormat()
 }
@@ -323,4 +328,12 @@ func (a *Application) SetNetParser(netParser cfacade.INetParser) {
 	}
 
 	a.netParser = netParser
+}
+
+func (a *Application) SetErrorHandler(handler cfacade.ErrorHandler) {
+	if a.Running() || handler == nil {
+		return
+	}
+
+	a.errorHandler = handler
 }
