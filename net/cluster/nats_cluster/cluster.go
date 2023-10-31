@@ -160,6 +160,8 @@ func (p *Cluster) remoteProcess() {
 		message.FuncName = packet.FuncName
 		if packet.ArgBytes != nil {
 			message.Args = packet.ArgBytes
+		} else {
+			message.Args = make([]byte, 0)
 		}
 
 		message.IsCluster = true
