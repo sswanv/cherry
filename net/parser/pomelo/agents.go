@@ -104,3 +104,10 @@ func Count() int {
 
 	return len(sidAgentMap)
 }
+
+func UidCount() int {
+	lock.RLock()
+	defer lock.RUnlock()
+
+	return len(uidMap)
+}
