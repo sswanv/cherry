@@ -102,13 +102,13 @@ func (w *WSConnector) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn := NewWSConn(wsConn)
-	w.InChan(&conn)
+	conn := NewWrapperWSConn(r, NewWSConn(wsConn))
+	w.InChan(conn)
 }
 
 // NewWSConn return an initialized *WSConn
-func NewWSConn(conn *websocket.Conn) WSConn {
-	c := WSConn{
+func NewWSConn(conn *websocket.Conn) *WSConn {
+	c := &WSConn{
 		Conn: conn,
 	}
 	return c
