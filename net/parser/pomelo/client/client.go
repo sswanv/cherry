@@ -87,7 +87,7 @@ func (p *Client) ConnectToWS(addr string, path string, tlsConfig ...*tls.Config)
 	}
 
 	wsConn := cconnector.NewWSConn(conn)
-	p.conn = &wsConn
+	p.conn = wsConn
 
 	if err = p.handleHandshake(); err != nil {
 		return err
