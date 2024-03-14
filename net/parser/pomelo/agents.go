@@ -58,7 +58,9 @@ func Unbind(sid cfacade.SID) {
 	}
 
 	delete(sidAgentMap, sid)
-	delete(uidMap, agent.UID())
+	if oSid, ok := uidMap[agent.UID()]; ok && oSid == sid {
+		delete(uidMap, agent.UID())
+	}
 
 	sidCount := len(sidAgentMap)
 	uidCount := len(uidMap)
