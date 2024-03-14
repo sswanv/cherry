@@ -20,6 +20,9 @@ func NewWrapperWSConn(r *http.Request, wsConn *WSConn) *WrapperWSConn {
 }
 
 func (c *WrapperWSConn) RemoteAddr() net.Addr {
+	ipp, _ := netip.ParseAddrPort(c.r.RemoteAddr)
+	defaultIp := ipp.Addr().String()
+
 	ip := strings.TrimSpace(strings.Split(c.r.Header.Get("X-Original-Forwarded-For"), ",")[0])
 	if ip != "" {
 		goto Result
@@ -35,7 +38,9 @@ func (c *WrapperWSConn) RemoteAddr() net.Addr {
 		goto Result
 	}
 
-	ip = c.r.RemoteAddr
+	if ip == "" {
+		ip = defaultIp
+	}
 
 Result:
 	addr, _ := netip.ParseAddr(ip)
